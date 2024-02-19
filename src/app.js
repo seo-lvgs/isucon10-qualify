@@ -41,7 +41,7 @@ app.post("/initialize", async (req, res, next) => {
       "0_Schema.sql",
       "1_DummyEstateData.sql",
       "2_DummyChairData.sql",
-      "index.sql",
+      "alter.sql",
     ];
     const execfiles = dbfiles.map((file) => path.join(dbdir, file));
     for (const execfile of execfiles) {
@@ -620,7 +620,8 @@ app.post("/api/estate", upload.single("estates"), async (req, res, next) => {
       params.push(...csv[i]);
     }
     await query(
-      "INSERT INTO estate(id, name, description, thumbnail, address, latitude, longitude, rent, door_height, door_width, features, popularity) VALUES " + binds.join(", "),
+      "INSERT INTO estate(id, name, description, thumbnail, address, latitude, longitude, rent, door_height, door_width, features, popularity) VALUES " +
+        binds.join(", "),
       params
     );
     await commit();
