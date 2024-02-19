@@ -1,0 +1,5 @@
+---
+- name: Truncate mysql slow log
+  command: truncate -s 0 /var/log/mysql/mysql-slow.log
+  become: yes
+  become_user: root

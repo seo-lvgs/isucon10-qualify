@@ -10,6 +10,14 @@
     mode: 0644
   notify: restart isuumo.node
 
+- name: Copy SQL File
+  copy:
+    src: ../../../../src/db/alter.sql
+    dest: /home/isucon/isuumo/webapp/mysql/db/alter.sql
+    owner: isucon
+    group: isucon
+    mode: 0755
+
 - name: Copy Package.json
   copy:
     src: ../../../../src/package.json
@@ -25,7 +33,6 @@
   environment:
     PATH: /home/isucon/local/node/bin:{{ ansible_facts.env.PATH }}
   notify: restart isuumo.node
-
 
 - name: deploy app
   copy:
