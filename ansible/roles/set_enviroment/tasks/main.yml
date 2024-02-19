@@ -6,11 +6,3 @@
     owner: isucon
     group: isucon
     mode: 0644
-
-- name: Copy env2.sh file
-  copy:
-    src: env2.sh
-    dest: /home/isucon/env2.sh
-    owner: isucon
-    group: isucon
-    mode: 0644
