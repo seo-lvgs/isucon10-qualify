@@ -559,8 +559,8 @@ app.get("/api/recommended_estate/:id", async (req, res, next) => {
       chair.width + chair.height + chair.depth - minSize - maxSize;
 
     const es = await query(
-      "SELECT * FROM estate where (door_width >= ? AND door_height>= ?) ORDER BY popularity DESC, id ASC LIMIT ?",
-      [minSize, middleSize, LIMIT]
+      "SELECT * FROM estate where (door_width >= ? AND door_height>= ?) OR (door_width >= ? AND door_height>= ?) ORDER BY popularity DESC, id ASC LIMIT ?",
+      [minSize, middleSize, middleSize, minSize, LIMIT]
     );
     const estates = es.map((estate) => camelcaseKeys(estate));
     res.json({ estates });
@@ -613,13 +613,16 @@ app.post("/api/estate", upload.single("estates"), async (req, res, next) => {
   try {
     await beginTransaction();
     const csv = parse(req.file.buffer, { skip_empty_line: true });
+    const binds = [];
+    const params = [];
     for (var i = 0; i < csv.length; i++) {
-      const items = csv[i];
-      await query(
-        "INSERT INTO estate(id, name, description, thumbnail, address, latitude, longitude, rent, door_height, door_width, features, popularity) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
-        items
-      );
+      binds.push("(?,?,?,?,?,?,?,?,?,?,?,?)");
+      params.push(...csv[i]);
     }
+    await query(
+      "INSERT INTO estate(id, name, description, thumbnail, address, latitude, longitude, rent, door_height, door_width, features, popularity) VALUES " + binds.join(", "),
+      params
+    );
     await commit();
     res.status(201);
     res.json({ ok: true });
