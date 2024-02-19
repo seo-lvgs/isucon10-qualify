@@ -41,6 +41,7 @@ app.post("/initialize", async (req, res, next) => {
       "0_Schema.sql",
       "1_DummyEstateData.sql",
       "2_DummyChairData.sql",
+      "index.sql",
     ];
     const execfiles = dbfiles.map((file) => path.join(dbdir, file));
     for (const execfile of execfiles) {
@@ -272,16 +273,16 @@ app.get("/api/chair/:id", async (req, res, next) => {
 app.post("/api/chair/buy/:id", async (req, res, next) => {
   const getConnection = promisify(db.getConnection.bind(db));
   const connection = await getConnection();
-  const beginTransaction = promisify(connection.beginTransaction.bind(connection));
+  const beginTransaction = promisify(
+    connection.beginTransaction.bind(connection)
+  );
   const query = promisify(connection.query.bind(connection));
   const commit = promisify(connection.commit.bind(connection));
   const rollback = promisify(connection.rollback.bind(connection));
   try {
     const id = req.params.id;
     await beginTransaction();
-    const [
-      chair,
-    ] = await query(
+    const [chair] = await query(
       "SELECT * FROM chair WHERE id = ? AND stock > 0 FOR UPDATE",
       [id]
     );
@@ -554,8 +555,9 @@ app.get("/api/recommended_estate/:id", async (req, res, next) => {
 
     const minSize = Math.min(chair.width, chair.height, chair.depth);
     const maxSize = Math.max(chair.width, chair.height, chair.depth);
-    const middleSize = chair.width + chair.height + chair.depth - minSize - maxSize;
-    
+    const middleSize =
+      chair.width + chair.height + chair.depth - minSize - maxSize;
+
     const es = await query(
       "SELECT * FROM estate where (door_width >= ? AND door_height>= ?) ORDER BY popularity DESC, id ASC LIMIT ?",
       [minSize, middleSize, LIMIT]
@@ -572,7 +574,9 @@ app.get("/api/recommended_estate/:id", async (req, res, next) => {
 app.post("/api/chair", upload.single("chairs"), async (req, res, next) => {
   const getConnection = promisify(db.getConnection.bind(db));
   const connection = await getConnection();
-  const beginTransaction = promisify(connection.beginTransaction.bind(connection));
+  const beginTransaction = promisify(
+    connection.beginTransaction.bind(connection)
+  );
   const query = promisify(connection.query.bind(connection));
   const commit = promisify(connection.commit.bind(connection));
   const rollback = promisify(connection.rollback.bind(connection));
@@ -600,7 +604,9 @@ app.post("/api/chair", upload.single("chairs"), async (req, res, next) => {
 app.post("/api/estate", upload.single("estates"), async (req, res, next) => {
   const getConnection = promisify(db.getConnection.bind(db));
   const connection = await getConnection();
-  const beginTransaction = promisify(connection.beginTransaction.bind(connection));
+  const beginTransaction = promisify(
+    connection.beginTransaction.bind(connection)
+  );
   const query = promisify(connection.query.bind(connection));
   const commit = promisify(connection.commit.bind(connection));
   const rollback = promisify(connection.rollback.bind(connection));
